@@ -4,7 +4,8 @@ import Login from '../components/Login.vue';
 import Home from '../components/Home.vue';
 import Welcome from '../components/Welcome.vue';
 import Users from '../components/Users.vue';
-import Rules from '../components/Rules.vue';
+import Goods from '../components/Goods/Goods.vue';
+import AppendGoods from '../components/Goods/AppendGoods';
 
 Vue.use(VueRouter);
 
@@ -21,7 +22,8 @@ const vueRouter = new VueRouter({
       children: [
         { path: '/welcome', component: Welcome },
         { path: '/users', component: Users },
-        { path: '/rules', component: Rules }]
+        { path: '/goods', component: Goods },
+        { path: '/appendGoods', component: AppendGoods }]
     }
   ]
 });

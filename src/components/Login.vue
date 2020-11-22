@@ -69,18 +69,23 @@ export default {
           url: '/login',
           method: 'post',
           data: this.$qs.stringify(data)
-          // headers: {
-          //  'Content-Type': 'application/x-www-form-urlencoded'
-          // }
         });
-        console.log(res);
         if (res.data.flag) {
-          this.$message.success('登陆成功');
-          console.log(res.data.data);
+          this.$message({
+            message: '登陆成功',
+            type: 'success',
+            duration: 1000
+          });
           window.sessionStorage.setItem('token', '123321');
           await this.$router.push('home');
           return true;
-        } else this.$message.error(res.data.errorMsg);
+        } else {
+          this.$message({
+            message: res.data.errorMsg,
+            type: 'error',
+            duration: 1000
+          });
+        }
         return true;
       });
     }
@@ -91,7 +96,7 @@ export default {
 <style lang="less" scoped>
   .login_container{
     background-color: #50AEFF;
-    height: 80%;
+    height: 60%;
     position: relative;
     top: 50%;
     transform: translateY(-50%);
