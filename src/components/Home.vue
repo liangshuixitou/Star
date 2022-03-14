@@ -1,69 +1,87 @@
 <template>
   <el-container class="home-container">
-    <el-aside :width="isCollapsed ? '64px' : '200px'">
+    <el-aside :width="isCollapsed ? '64px' : '240px'">
       <div class="toggle-button" @click="toggleCollapse">
         |||
       </div>
       <el-menu
         :default-active="activePath"
         class="el-menu-vertical-demo"
-        @open="handleOpen"
-        @close="handleClose"
         background-color="#304156"
         text-color="#fff"
         unique-opened
         :router="true"
         :collapse=isCollapsed
         :collapse-transition="false"
+        @select="handleSelect"
         active-text-color="#409eff">
-        <el-menu-item index="/welcome">
+        <el-menu-item index="/index">
           <i class="el-icon-s-home"></i>
-          <span slot="title">首页</span>
+          <span slot="title">Home</span>
         </el-menu-item>
-        <el-submenu index="2">
+        <el-submenu index="/cv">
+          <template slot="title">
+            <i class="el-icon-data-board"></i>
+            <span>CV Attacks</span>
+          </template>
+          <el-menu-item index="/appendGoods">
+            <i class="el-icon-monitor"></i>
+            <span slot="title">Visual Attack</span>
+          </el-menu-item>
+          <el-menu-item index="/goodsCatg">
+            <i class="el-icon-menu"></i>
+            <span slot="title">Classify an Image</span>
+          </el-menu-item>
+          <el-menu-item index="/cv-papers">
+            <i class="el-icon-document"></i>
+            <span slot="title">Paper List</span>
+          </el-menu-item>
+        </el-submenu>
+         <el-submenu index="/nlp">
           <template slot="title">
             <i class="el-icon-s-goods"></i>
-            <span>商品</span>
+            <span>NLP Attacks</span>
           </template>
           <el-menu-item index="/goods">
             <i class="el-icon-notebook-2"></i>
-            <span slot="title">商品列表</span>
+            <span slot="title">Paper List</span>
           </el-menu-item>
           <el-menu-item index="/appendGoods">
             <i class="el-icon-folder-add"></i>
-            <span slot="title">添加商品</span>
+            <span slot="title">Visual Attack</span>
           </el-menu-item>
-          <el-menu-item index="1-1">
+          <el-menu-item index="/goodsCatg">
             <i class="el-icon-menu"></i>
-            <span slot="title">商品分类</span>
+            <span slot="title">Classifier</span>
           </el-menu-item>
         </el-submenu>
-        <el-submenu index="3">
+         </el-submenu>
+         <el-submenu index="/inter">
           <template slot="title">
-            <i class="el-icon-s-order"></i>
-            <span>订单</span>
+            <i class="el-icon-s-goods"></i>
+            <span>Interpretability</span>
           </template>
+          <el-menu-item index="/goods">
+            <i class="el-icon-notebook-2"></i>
+            <span slot="title">Paper List</span>
+          </el-menu-item>
+          <el-menu-item index="/appendGoods">
+            <i class="el-icon-folder-add"></i>
+            <span slot="title">Visual Attack</span>
+          </el-menu-item>
         </el-submenu>
-        <el-submenu index="4">
-          <template slot="title">
-            <i class="el-icon-s-marketing"></i>
-            <span>营销</span>
-          </template>
-        </el-submenu>
-        <el-submenu index="5">
-          <template slot="title">
-            <i class="el-icon-s-check"></i>
-            <span>权限</span>
-          </template>
-        </el-submenu>
+        <el-menu-item index="/about">
+          <i class="el-icon-s-home"></i>
+          <span slot="title">About</span>
+        </el-menu-item>
       </el-menu>
-    </el-aside>
+    </el-aside> 
     <el-container>
       <el-header>
+        <img src="../assets/images/ai_icon.svg" width="35px">
         <div>
-          <span>电商后台管理系统</span>
+          <a>Onion</a>
         </div>
-        <el-button @click="signOut" round>退出</el-button>
       </el-header>
       <el-main>
         <router-view></router-view>
@@ -74,32 +92,29 @@
 
 <script>
 export default {
+  name: 'Home',
   data () {
     return {
       // 菜单是否折叠
       isCollapsed: false,
       // 被激活的链接地址
-      activePath: ''
+      activePath: '/index',
+      type: 0,
+      name: '',
+      typeName: ''
     };
   },
   created () {
     this.activePath = window.sessionStorage.getItem('activePath');
   },
   methods: {
-    signOut () {
-      this.$message.success('退出成功');
-      window.sessionStorage.clear();
-      this.$router.push('/login');
-    },
     // 点击按钮，实现菜单的折叠，切换以及展开
     toggleCollapse () {
-      console.log('1');
       this.isCollapsed = !this.isCollapsed;
     },
-    // 保存连接的激活状态
-    saveNavState (activePath) {
-      window.sessionStorage.setItem('activePath', activePath);
-      this.activePath = activePath;
+    handleSelect (key) {
+      console.log(key);
+      window.sessionStorage.setItem('activePath', key);
     }
   }
 };
@@ -111,8 +126,7 @@ export default {
   }
   .el-header {
     display: flex;
-    justify-content: space-between;
-    background-color: #409eff;
+    background-color: #358ccd;
     align-items: center;
     padding-left: 10px;
     color: #ffffff;
@@ -122,11 +136,12 @@ export default {
     > div {
       display: flex;
       align-items: center;
-      padding: 15px;
+      padding: 10px;
     }
   }
   .el-aside {
     background-color: #304156;
+    transition: width 0.15s;
     .el-menu {
       border-right: 0;
     }

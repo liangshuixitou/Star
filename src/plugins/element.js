@@ -24,7 +24,12 @@ import {
   Dialog,
   MessageBox,
   Select,
-  Option
+  Option,
+  Steps,
+  Step,
+  DatePicker,
+  Transfer,
+  Link
 } from 'element-ui';
 
 Vue.use(Button);
@@ -51,5 +56,10 @@ Vue.use(Pagination);
 Vue.use(Dialog);
 Vue.use(Select);
 Vue.use(Option);
+Vue.use(Steps);
+Vue.use(Step);
+Vue.use(DatePicker);
+Vue.use(Transfer);
+Vue.use(Link);
 Vue.prototype.$message = Message;
 Vue.prototype.$msgbox = MessageBox;

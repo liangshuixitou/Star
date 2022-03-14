@@ -6,7 +6,6 @@ import './assets/css/global.css';
 import './assets/icon/iconfont.css';
 import axios from 'axios';
 import qs from 'qs';
-import TreeTable from 'vue-table-with-tree-grid';
 
 Vue.config.productionTip = false;
 
@@ -18,8 +17,6 @@ axios.interceptors.request.use(config => {
 Vue.prototype.$http = axios;
 axios.defaults.baseURL = '/api';
 Vue.prototype.$qs = qs;
-
-Vue.component('tree-table', TreeTable);
 
 new Vue({
   router,
