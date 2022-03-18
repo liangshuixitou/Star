@@ -37,7 +37,7 @@
   </div>
 </template>
 
-<script>  
+<script>
 import post from '../../utils/requests.js';
 
 export default {
@@ -51,30 +51,30 @@ export default {
       url: this.base_url
     };
   },
-  created() {
+  created () {
     this.getPapers();
   },
   methods: {
-    getPapers() {
+    getPapers () {
       this.getDataSets();
       this.getClassfiers();
       this.getAttacks();
     },
 
-    getDataSets() {
-      post(this.url + "/datasets", null).then(res => {
-        this.datasets = res.data;  
+    getDataSets () {
+      post(this.url + '/datasets', null).then(res => {
+        this.datasets = res.data;
       });
     },
 
-    getClassfiers() {
-      post(this.url + "/classifiers", null).then(res => {
-        this.classifiers = res.data;  
+    getClassfiers () {
+      post(this.url + '/classifiers', null).then(res => {
+        this.classifiers = res.data;
       });
     },
 
-    getAttacks() {
-      post(this.url + "/attacks", null).then(res => {
+    getAttacks () {
+      post(this.url + '/attacks', null).then(res => {
         this.attacks = res.data;
       });
     }

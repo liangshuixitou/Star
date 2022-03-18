@@ -28,7 +28,7 @@
             <i class="el-icon-monitor"></i>
             <span slot="title">Visual Attack</span>
           </el-menu-item>
-          <el-menu-item index="/goodsCatg">
+          <el-menu-item index="/cv-classify">
             <i class="el-icon-menu"></i>
             <span slot="title">Classify an Image</span>
           </el-menu-item>
@@ -75,7 +75,7 @@
           <span slot="title">About</span>
         </el-menu-item>
       </el-menu>
-    </el-aside> 
+    </el-aside>
     <el-container>
       <el-header>
         <img src="../assets/images/ai_icon.svg" width="35px">

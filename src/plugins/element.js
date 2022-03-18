@@ -29,7 +29,9 @@ import {
   Step,
   DatePicker,
   Transfer,
-  Link
+  Link,
+  Upload,
+  Divider
 } from 'element-ui';
 
 Vue.use(Button);
@@ -61,5 +63,7 @@ Vue.use(Step);
 Vue.use(DatePicker);
 Vue.use(Transfer);
 Vue.use(Link);
+Vue.use(Upload);
+Vue.use(Divider);
 Vue.prototype.$message = Message;
 Vue.prototype.$msgbox = MessageBox;

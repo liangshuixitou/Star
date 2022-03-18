@@ -4,6 +4,7 @@ import Index from '../components/Index.vue';
 import Home from '../components/Home.vue';
 
 import CVPaper from '../components/CV/CVPaperList.vue';
+import CVClassify from '../components/CV/CVClassify.vue';
 
 Vue.use(VueRouter);
 
@@ -18,7 +19,8 @@ const vueRouter = new VueRouter({
       redirect: '/index',
       children: [
         { path: '/index', component: Index },
-        { path: '/cv-papers', component: CVPaper }]
+        { path: '/cv-papers', component: CVPaper },
+        { path: '/cv-classify', component: CVClassify }]
     }
   ]
 });
