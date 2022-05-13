@@ -4,7 +4,14 @@ import Index from '../components/Index.vue';
 import Home from '../components/Home.vue';
 
 import CVPaper from '../components/CV/CVPaperList.vue';
-import CVClassify from '../components/CV/CVClassify.vue';
+import CVClassifier from '../components/CV/CVClassifier.vue';
+import CVAttack from '../components/CV/CVAttack';
+
+import NLPAttack from '../components/NLP/NLPAttack';
+import NLPPaperList from '../components/NLP/NLPPaperList';
+
+import INExplain from '../components/Interpret/INExplain';
+import INpaperList from '../components/Interpret/INpaperList';
 
 Vue.use(VueRouter);
 
@@ -20,7 +27,12 @@ const vueRouter = new VueRouter({
       children: [
         { path: '/index', component: Index },
         { path: '/cv-papers', component: CVPaper },
-        { path: '/cv-classify', component: CVClassify }]
+        { path: '/cv-classifier', component: CVClassifier },
+        { path: '/cv-attack', component: CVAttack },
+        { path: '/nlp-attack', component: NLPAttack },
+        { path: '/nlp-papers', component: NLPPaperList },
+        { path: '/in-explain', component: INExplain },
+        { path: '/in-papers', component: INpaperList}]
     }
   ]
 });

@@ -12,9 +12,9 @@
       style="margin-top: 20px"
       class="cf-card"
       shadow="hover">
-      <el-row :gutter="80">
+      <el-row :gutter="80" class="el-row-cf">
         <el-col :span="12">
-          <span class="s-cf-intro">Upload an image</span>
+          <span class="s-cf-intro" style="font-family: Helvetica">Upload an image</span>
           <el-divider></el-divider>
           <el-upload
             class="avatar-uploader"
@@ -30,10 +30,10 @@
           </el-upload>
         </el-col>
         <el-col :span="12">
-          <span class="s-cf-intro">Predicted identity</span>
+          <span class="s-cf-intro" style="font-family: Helvetica">Predicted identity</span>
           <el-divider></el-divider>
           <el-table
-            :header-cell-style="{background:'#303133', fontFamily:'Helvetica',height:'60px',fontSize:'18px',color:'white'}"
+            :header-cell-style="{background:'#358ccd', fontFamily:'Helvetica',height:'60px',fontSize:'18px',color:'white'}"
             :cell-style="{color: '#666', fontFamily: 'Arial',fontSize:'18px',height:'60px'}"
             :data="classifyResult"
             style="width: 100%;margin-top: 30px">
@@ -49,9 +49,9 @@
           </el-table>
         </el-col>
       </el-row>
-      <el-row :gutter="80">
+      <el-row :gutter="80" class="el-row-cf">
         <el-col :span="12">
-          <span class="s-cf-intro">Model</span>
+          <span class="s-cf-intro" style="font-family: Helvetica">Model</span>
           <el-divider></el-divider>
           <el-select
             v-model="classifier"
@@ -69,14 +69,14 @@
           <el-button @click="classifyImage" style="margin-left: 230px;margin-top: 20px;width: 180px;height: 50px;font-size: 20px" type="info" size="medium">Classify image</el-button>
         </el-col>
         <el-col :span="12">
-          <span class="s-cf-intro">About the model</span>
+          <span class="s-cf-intro" style="font-family: Helvetica">About the model</span>
           <el-divider></el-divider>
           <div class="div-cf div-cf-top">
-            <span>Classifier: </span>
+            <span style="font-family: Helvetica">Classifier: </span>
             <span style="font-weight: 400">{{ classifier.name }}</span>
           </div>
           <div class="div-cf">
-            <span>Paper: </span>
+            <span style="font-family: Helvetica">Paper: </span>
             <el-link type="primary" style="font-weight: normal; font-size: 20px" :href="classifier.paper">{{ classifier.paper }}</el-link>
           </div>
         </el-col>
@@ -109,10 +109,7 @@ export default {
   methods: {
     getClassfiers () {
       post('/cv/classifiers', null).then(res => {
-        this.classifiers = [{
-          name: 'ResNet18',
-          paper: ' https://arxiv.org/abs/1512.03385'
-        }];
+        this.classifiers = res.data;
       });
     },
     async uploadFile (params) {
@@ -129,6 +126,10 @@ export default {
       this.imageUrl = URL.createObjectURL(file.raw);
     },
     async classifyImage () {
+      if (!this.imageName) {
+        this.$message.error('Please upload a picture');
+        return;
+      }
       const data = {
         image_name: this.imageName,
         classifier: this.classifier.name
@@ -168,7 +169,7 @@ export default {
     font-size: 20px;
     font-weight: 300;
   }
-  .el-row {
+  .el-row-cf {
     margin-bottom: 30px;
   }
   .s-cf-intro {

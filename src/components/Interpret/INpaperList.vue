@@ -1,16 +1,20 @@
 <template>
   <div>
-    index
+    <Paper :base_url="url"></Paper>
   </div>
 </template>
 
 <script>
+import Paper from '../templetes/PaperList.vue';
 
 export default {
-  name: 'Index',
+  name: 'NLPPapers',
+  components: {
+    Paper
+  },
   data () {
     return {
-      paperList: []
+      url: '/interpret'
     };
   },
   created () {

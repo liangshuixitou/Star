@@ -24,12 +24,12 @@
             <i class="el-icon-data-board"></i>
             <span>CV Attacks</span>
           </template>
-          <el-menu-item index="/appendGoods">
+          <el-menu-item index="/cv-attack">
             <i class="el-icon-monitor"></i>
-            <span slot="title">Visual Attack</span>
+            <span slot="title">Visualize Attack</span>
           </el-menu-item>
-          <el-menu-item index="/cv-classify">
-            <i class="el-icon-menu"></i>
+          <el-menu-item index="/cv-classifier">
+            <i class="el-icon-picture-outline"></i>
             <span slot="title">Classify an Image</span>
           </el-menu-item>
           <el-menu-item index="/cv-papers">
@@ -37,37 +37,32 @@
             <span slot="title">Paper List</span>
           </el-menu-item>
         </el-submenu>
-         <el-submenu index="/nlp">
+        <el-submenu index="/nlp">
           <template slot="title">
-            <i class="el-icon-s-goods"></i>
+            <i class="el-icon-mic"></i>
             <span>NLP Attacks</span>
           </template>
-          <el-menu-item index="/goods">
-            <i class="el-icon-notebook-2"></i>
-            <span slot="title">Paper List</span>
-          </el-menu-item>
-          <el-menu-item index="/appendGoods">
-            <i class="el-icon-folder-add"></i>
+          <el-menu-item index="/nlp-attack">
+            <i class="el-icon-data-analysis"></i>
             <span slot="title">Visual Attack</span>
           </el-menu-item>
-          <el-menu-item index="/goodsCatg">
-            <i class="el-icon-menu"></i>
-            <span slot="title">Classifier</span>
+          <el-menu-item index="/nlp-papers">
+            <i class="el-icon-document"></i>
+            <span slot="title">Paper List</span>
           </el-menu-item>
         </el-submenu>
-         </el-submenu>
-         <el-submenu index="/inter">
+        <el-submenu index="/inter">
           <template slot="title">
-            <i class="el-icon-s-goods"></i>
-            <span>Interpretability</span>
+            <i class="el-icon-s-platform"></i>
+            <span>AI Interpret</span>
           </template>
-          <el-menu-item index="/goods">
-            <i class="el-icon-notebook-2"></i>
-            <span slot="title">Paper List</span>
+          <el-menu-item index="/in-explain">
+            <i class="el-icon-data-analysis"></i>
+            <span slot="title">Visual Explain</span>
           </el-menu-item>
-          <el-menu-item index="/appendGoods">
-            <i class="el-icon-folder-add"></i>
-            <span slot="title">Visual Attack</span>
+          <el-menu-item index="/in-papers">
+            <i class="el-icon-document"></i>
+            <span slot="title">Paper List</span>
           </el-menu-item>
         </el-submenu>
         <el-menu-item index="/about">

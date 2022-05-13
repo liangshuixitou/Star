@@ -31,7 +31,10 @@ import {
   Transfer,
   Link,
   Upload,
-  Divider
+  Divider,
+  Image,
+  Radio,
+  Checkbox
 } from 'element-ui';
 
 Vue.use(Button);
@@ -65,5 +68,8 @@ Vue.use(Transfer);
 Vue.use(Link);
 Vue.use(Upload);
 Vue.use(Divider);
+Vue.use(Image);
+Vue.use(Radio);
+Vue.use(Checkbox);
 Vue.prototype.$message = Message;
 Vue.prototype.$msgbox = MessageBox;
