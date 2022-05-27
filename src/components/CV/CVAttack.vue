@@ -1,24 +1,89 @@
 <template>
-  <div style="width: 70%; margin: 0 auto">
-    <el-card
-      shadow="hover"
-      style="margin-top: 60px">
-      <h1>
-        Visualize attack.
-      </h1>
-    </el-card>
-    <el-card
-      shadow="hover"
-      style="margin-top: 20px">
-      <el-row :gutter="20" style="margin-bottom: 0px">
-        <el-col :span="11"><span style="font-size: 25px;font-family: Helvetica">Select model</span></el-col>
-        <el-col :span="11"><span style="font-size: 25px;font-family: Helvetica">Select attack</span></el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="11">
+  <div>
+    <div style="text-align: right">
+      <div v-if="loadingAttack">
+        <Loading></Loading>
+      </div>
+      <img src="../../assets/images/menu.png" style="height: 30px;position:absolute;top:8.8%;left:97%" @click="handleOptions" />
+    </div>
+    <div style="width: 70%; margin: 0 auto">
+      <el-card
+        shadow="hover"
+        style="margin-top: 40px">
+        <el-row :gutter="20" style="display: flex;align-items: center">
+          <el-col :span="22">
+            <div style="font-size: 40px;font-family: Helvetica">Visualize attack.</div>
+          </el-col>
+          <el-col :span="2">
+            <el-button style="float: right;height: 100%" type="danger" @click="runAttack">Run</el-button>
+          </el-col>
+        </el-row>
+      </el-card>
+      <el-card
+        shadow="hover"
+        style="margin-top: 20px">
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div style="margin-bottom: 10px;font-size: 25px;font-family: Helvetica">Origin image</div>
+            <el-upload
+              action="action"
+              :show-file-list="false"
+              :on-success="uploadSuccess"
+              :http-request="uploadFile">
+              <img v-if="imageUrl" :src="imageUrl" class="pre-image">
+              <div v-else class="uploader-icon">
+                <i  class="el-icon-plus"></i>
+              </div>
+            </el-upload>
+          </el-col>
+          <el-col :span="8">
+            <div style="margin-bottom: 10px;font-size: 25px;font-family: Helvetica">Result image</div>
+            <el-image :src="result_image_url" class="result-image" fit="contain">
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+          </el-col>
+          <el-col :span="8">
+            <div style="margin-bottom: 10px;font-size: 25px;font-family: Helvetica">Difference image</div>
+            <el-image :src="difference_image_url" class="result-image" fit="fill">
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+          </el-col>
+        </el-row>
+        <el-row v-if="attackResult.length !== 0 && classifyResult.length !== 0" :gutter="20">
+          <el-col :span="8">
+            <LabelPerTable :tableData="classifyResult">
+            </LabelPerTable>
+          </el-col>
+          <el-col :span="8">
+              <LabelPerTable :tableData="attackResult">
+            </LabelPerTable>
+          </el-col>
+          <el-col :span="8">
+            <div class="atk-abt atk-about-top">
+              <span style="font-family: Helvetica">Model: </span>
+              <el-link type="primary" style="font-weight: normal; font-size: 16px" :href="classifier.paper">{{ classifier.paper }}</el-link>
+            </div>
+            <div class="atk-abt">
+              <span style="font-family: Helvetica">Attack: </span>
+              <el-link type="primary" style="font-weight: normal; font-size: 16px" :href="attack.paper">{{ attack.paper }}</el-link>
+            </div>
+          </el-col>
+        </el-row>
+      </el-card>
+      <el-drawer
+        title="Options"
+        size="20%"
+        :visible.sync="visual_drawer"
+        direction="ltr">
+        <div style="width: 90%; margin: 0 auto">
+          <div style="font-size: 20px;font-family: Helvetica;margin-top: 20px">Select model</div>
           <el-select
             v-model="classifier"
-            style="width: 100%; margin-top: 10px"
+            style="width: 100%; margin-top: 15px"
             stripe
             value-key="name">
             <el-option
@@ -28,11 +93,10 @@
               :value="item">
             </el-option>
           </el-select>
-        </el-col>
-        <el-col :span="11">
+          <div style="font-size: 20px;font-family: Helvetica;margin-top: 40px">Select attack</div>
           <el-select
             v-model="attack"
-            style="width: 100%; margin-top: 10px"
+            style="width: 100%; margin-top: 15px"
             stripe
             value-key="name">
             <el-option
@@ -42,113 +106,42 @@
               :value="item">
             </el-option>
           </el-select>
-        </el-col>
-        <el-col :span="2">
-          <el-button style="margin-top: 10px;" type="info" @click="runAttack">Attack</el-button>
-        </el-col>
-      </el-row>
-    </el-card>
-    <el-card
-      shadow="hover"
-      style="margin-top: 20px">
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div style="margin-bottom: 10px;font-size: 25px;font-family: Helvetica">Origin image</div>
-          <el-upload
-            action="action"
-            :show-file-list="false"
-            :on-success="uploadSuccess"
-            :http-request="uploadFile">
-            <img v-if="imageUrl" :src="imageUrl" class="pre-image">
-            <div v-else class="uploader-icon">
-              <i  class="el-icon-plus"></i>
-            </div>
-          </el-upload>
-        </el-col>
-        <el-col :span="8">
-          <div style="margin-bottom: 10px;font-size: 25px;font-family: Helvetica">Result image</div>
-          <el-image :src="result_image" class="result-image" fit="contain">
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image>
-        </el-col>
-        <el-col :span="8">
-          <div style="margin-bottom: 10px;font-size: 25px;font-family: Helvetica">Difference image</div>
-          <el-image :src="difference_image" class="result-image" fit="fill">
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image>
-        </el-col>
-      </el-row>
-      <el-row v-if="classifyResult.length !== 0" :gutter="20">
-        <el-col :span="8">
-          <el-table
-            :header-cell-style="{background:'#358ccd', fontFamily:'Helvetica',height:'60px',fontSize:'18px',color:'white'}"
-            :cell-style="{color: '#666', fontFamily: 'Arial',fontSize:'18px',height:'60px'}"
-            :data="classifyResult"
-            style="width: 100%;margin-top: 30px">
-            <el-table-column
-              prop="label"
-              label="Prediction"
-              width="200">
-            </el-table-column>
-            <el-table-column
-              prop="percentage"
-              label="Probability">
-            </el-table-column>
-          </el-table>
-        </el-col>
-        <el-col :span="8">
-          <el-table
-          :header-cell-style="{background:'#358ccd', fontFamily:'Helvetica',height:'60px',fontSize:'18px',color:'white'}"
-          :cell-style="{color: '#666', fontFamily: 'Arial',fontSize:'18px',height:'60px'}"
-          :data="attackResult"
-          style="width: 100%;margin-top: 30px">
-          <el-table-column
-            prop="label"
-            label="Prediction"
-            width="200">
-          </el-table-column>
-          <el-table-column
-            prop="percentage"
-            label="Probability">
-          </el-table-column>
-        </el-table></el-col>
-        <el-col :span="8">
-          <div class="atk-abt atk-about-top">
-            <span style="font-family: Helvetica">Model: </span>
-            <el-link type="primary" style="font-weight: normal; font-size: 16px" :href="classifier.paper">{{ classifier.paper }}</el-link>
-          </div>
-          <div class="atk-abt">
-            <span style="font-family: Helvetica">Attack: </span>
-            <el-link type="primary" style="font-weight: normal; font-size: 16px" :href="attack.paper">{{ attack.paper }}</el-link>
-          </div>
-        </el-col>
-      </el-row>
-    </el-card>
+          <div style="font-size: 20px;font-family: Helvetica;margin-top: 40px">Choose Epsilon</div>
+          <el-slider style="margin-top: 15px" v-model="epsilon" :min="0" :max="1" :step="0.01" show-input></el-slider>
+        </div>
+      </el-drawer>
+    </div>
   </div>
 </template>
 
 <script>
 import post from '../../utils/requests';
+import LabelPerTable from '../templetes/LabelPerTable';
+import Loading from '../templetes/Loading';
 
 export default {
   name: 'CVClassify',
+  components: {
+    LabelPerTable,
+    Loading
+  },
   data () {
     return {
       imageUrl: '',
       imageName: '',
-      result_image: '',
-      difference_image: '',
       result_image_name: '',
+      difference_image_name: '',
+      result_image_url: '',
+      difference_image_url: '',
       classifiers: [],
       attacks: [],
       classifier: null,
       attack: null,
       classifyResult: [],
-      attackResult: []
+      attackResult: [],
+      visual_drawer: false,
+      epsilon: 0.05,
+      loadingAttack: false
     };
   },
   created () {
@@ -156,6 +149,9 @@ export default {
     this.getAttacks();
   },
   methods: {
+    handleOptions () {
+      this.visual_drawer = true;
+    },
     getClassfiers () {
       post('/cv/classifiers', null).then(res => {
         this.classifiers = res.data;
@@ -177,15 +173,17 @@ export default {
       this.imageName = res;
     },
     uploadSuccess (res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
+      const baseImageUrl = 'http://127.0.0.1:9090/static/tmp/';
+      this.imageUrl = baseImageUrl + this.imageName;
     },
     validateParams () {
       if (!this.classifier) {
+        this.visual_drawer = true;
         this.$message.error('Please select a model');
         return false;
       }
       if (!this.attack) {
-        console.log(this.attack);
+        this.visual_drawer = true;
         this.$message.error('Please select a attack');
         return false;
       }
@@ -202,22 +200,27 @@ export default {
       const data = {
         image_name: this.imageName,
         classifier: this.classifier.name,
-        attack: this.attack.name
+        attack: this.attack.name,
+        epsilon: this.epsilon
       };
+      this.loadingAttack = true;
       const { data: res } = await this.$http({
         method: 'post',
         url: '/cv/attack',
         data: this.$qs.stringify(data)
       });
-      this.result_image = 'data:img/jpeg;base64,' + res.result_image;
-      this.difference_image = 'data:img/jpeg;base64,' + res.difference_image;
+      const baseImageUrl = 'http://127.0.0.1:9090/static/tmp/';
       this.result_image_name = res.result_image_name;
+      this.difference_image_name = res.difference_image_name;
+      this.result_image_url = baseImageUrl + this.result_image_name;
+      this.difference_image_url = baseImageUrl + this.difference_image_name;
       this.runClassify(this.imageName, this.classifier.name).then(res => {
-        this.classifyResult = res;
+        this.classifyResult = this.pre_show_data(res);
       });
       this.runClassify(this.result_image_name, this.classifier.name).then(res => {
-        this.attackResult = res;
+        this.attackResult = this.pre_show_data(res);
       });
+      this.loadingAttack = false;
       this.$message.success('Attack successful!');
     },
     async runClassify (imageName, classifier) {
@@ -231,12 +234,30 @@ export default {
         data: this.$qs.stringify(data)
       });
       return res.data;
+    },
+    pre_show_data (result) {
+      for (let i = 0; i < result.length; ++i) {
+        result[i].percentage = this.render_float(result[i].percentage);
+      }
+      return result;
+    },
+    render_float (num) {
+      return (num.toFixed(4)) + '%';
     }
   }
 };
 </script>
 
 <style lang="less">
+  .el-card {
+    border: #8c939d 1px solid !important;
+  }
+  .icon-menu {
+    width: 30px;
+    height: 6px;
+    border-top: 12px double;
+    border-bottom: 4px solid;
+  }
   .result-image {
     width: 450px;
     height: 450px;
@@ -271,7 +292,6 @@ export default {
     overflow: hidden;
     position: relative;
   }
-
   .uploader-icon {
     font-size: 40px;
     color: #8c939d;
@@ -288,5 +308,8 @@ export default {
     width: 450px;
     height: 450px;
     display: block;
+  }
+  .el-aside {
+    background-color: rgba(216, 220, 233,0.5);
   }
 </style>

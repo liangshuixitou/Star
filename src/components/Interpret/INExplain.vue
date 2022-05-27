@@ -1,164 +1,181 @@
 <template>
-  <div style="width: 70%; margin: 0 auto">
-    <el-card
-      shadow="hover"
-      style="margin-top: 60px">
-      <h1>
-        Visualize explain.
-      </h1>
-    </el-card>
-    <el-card
-      shadow="hover"
-      style="margin-top: 20px">
-      <el-row :gutter="20" style="margin-bottom: 0px">
-        <el-col :span="16"><span style="font-size: 25px;font-family: Helvetica">Select method</span></el-col>
-        <el-col :span="4"><span style="font-size: 25px;font-family: Helvetica">Options</span></el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="16">
-          <el-select
-            v-model="method"
-            style="width: 100%; margin-top: 10px"
-            stripe
-            value-key="name">
-            <el-option
-              v-for="item in methods"
-              :key="item.name"
-              :label="item.name"
-              :value="item">
-            </el-option>
-          </el-select>
-        </el-col>
-        <el-col :span=3>
-          <el-checkbox v-model="aug_smooth" :label="true" border class="radio-class">aug smooth</el-checkbox>
-        </el-col>
-        <el-col :span=3>
-          <el-checkbox v-model="eigen_smooth" :label="true" border class="radio-class">eigen smooth</el-checkbox>
-        </el-col>
-        <el-col :span="2">
-          <el-button style="margin-top: 10px;width: 100%;float: right" type="info" @click="runExplain">Explain</el-button>
-        </el-col>
-      </el-row>
-    </el-card>
-    <el-card
-      shadow="hover"
-      style="margin-top: 20px">
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div style="margin-bottom: 10px;font-size: 25px;font-family: Helvetica">Origin image</div>
-          <el-upload
-            action="action"
-            :show-file-list="false"
-            :on-success="uploadSuccess"
-            :http-request="uploadFile">
-            <img v-if="imageUrl" :src="imageUrl" class="pre-image">
-            <div v-else class="uploader-icon">
-              <i  class="el-icon-plus"></i>
+  <div>
+    <div style="text-align: right">
+      <div v-if="loadingAttack">
+        <Loading></Loading>
+      </div>
+      <img src="../../assets/images/menu.png" style="height: 30px;position:absolute;top:8.8%;left:97%" @click="handleOptions" />
+    </div>
+    <div style="width: 70%; margin: 0 auto">
+      <el-card
+        shadow="hover"
+        style="margin-top: 40px">
+        <el-row :gutter="20" style="display: flex;align-items: center">
+          <el-col :span="22">
+            <div style="font-size: 40px;font-family: Helvetica">
+              Visualize explain.
             </div>
-          </el-upload>
-        </el-col>
-        <el-col :span="8">
-          <div style="margin-bottom: 10px;font-size: 25px;font-family: Helvetica">Cam image</div>
-          <el-image :src="cam_image_url" class="result-image" fit="fill">
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image>
-        </el-col>
-        <el-col :span="8">
-          <div style="margin-bottom: 10px;font-size: 25px;font-family: Helvetica">GB image</div>
-          <el-image :src="gb_image_url" class="result-image" fit="fill">
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image>
-        </el-col>
-      </el-row>
-    </el-card>
-    <el-card
-      shadow="hover"
-      style="margin-top: 20px">
-      <el-row :gutter="20">
-        <el-col :span="22">
-          <div style="font-size: 25px;font-family: Helvetica">Histories</div>
-        </el-col>
-        <el-col :span="2">
-          <el-button type="danger" style="width: 100%;float: right" @click="clear_history">Clear</el-button>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="24">
-          <el-table
-            style="margin-top: 20px"
-            border
-            :data="histories"
-            :header-cell-style="{fontFamily:'微软雅黑',fontSize:'15px'}"
-            :cell-style="{color: '#666', fontFamily: 'Times New Roman',fontSize:'18px'}">
-            <el-table-column
-              align="center"
-              label="Method"
-              width="180">
-              <template slot-scope="scope">
-                {{ scope.row.method.name }}
-              </template>
-            </el-table-column>
-            <el-table-column
-              align="center"
-              label="Aug smooth"
-              width="150">
-              <template slot-scope="scope">
-                <el-switch :value="scope.row.aug_smooth"></el-switch>
-              </template>
-            </el-table-column>
-            <el-table-column
-              align="center"
-              label="Eigen smooth"
-              width="160">
-              <template slot-scope="scope">
-                <el-switch :value="scope.row.eigen_smooth"></el-switch>
-              </template>
-            </el-table-column>
-            <el-table-column
-              align="center"
-              label="Origin image">
-              <template slot-scope="scope">
-                <el-image :src="scope.row.image_url" class="table-image" fit="fill" />
-              </template>
-            </el-table-column>
-            <el-table-column
-              align="center"
-              label="Cam image">
-              <template slot-scope="scope">
-                <el-image :src="scope.row.cam_image_url" class="table-image" fit="fill" />
-              </template>
-            </el-table-column>
-            <el-table-column
-              align="center"
-              label="GB image">
-              <template slot-scope="scope">
-                <el-image :src="scope.row.gb_image_url" class="table-image" fit="fill" />
-              </template>
-            </el-table-column>
-            <el-table-column
-              align="center"
-              label="Operation"
-              width="140">
-              <template slot-scope="scope">
-                <el-button icon="el-icon-zoom-in" type="primary" @click="showHistory(scope.row)"></el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-col>
-      </el-row>
-    </el-card>
+          </el-col>
+          <el-col :span="2">
+            <el-button style="float: right;height: 100%" type="danger" @click="runExplain">Run</el-button>
+          </el-col>
+        </el-row>
+      </el-card>
+      <el-card
+        shadow="hover"
+        style="margin-top: 20px">
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div style="margin-bottom: 10px;font-size: 25px;font-family: Helvetica">Origin image</div>
+            <el-upload
+              action="action"
+              :show-file-list="false"
+              :on-success="uploadSuccess"
+              :http-request="uploadFile">
+              <img v-if="imageUrl" :src="imageUrl" class="pre-image">
+              <div v-else class="uploader-icon">
+                <i  class="el-icon-plus"></i>
+              </div>
+            </el-upload>
+          </el-col>
+          <el-col :span="8">
+            <div style="margin-bottom: 10px;font-size: 25px;font-family: Helvetica">Cam image</div>
+            <el-image :src="cam_image_url" class="result-image" fit="fill">
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+          </el-col>
+          <el-col :span="8">
+            <div style="margin-bottom: 10px;font-size: 25px;font-family: Helvetica">GB image</div>
+            <el-image :src="gb_image_url" class="result-image" fit="fill">
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+          </el-col>
+        </el-row>
+      </el-card>
+      <el-card
+        v-show="histories.length !== 0"
+        shadow="hover"
+        style="margin-top: 20px">
+        <el-row :gutter="20">
+          <el-col :span="22">
+            <div style="font-size: 25px;font-family: Helvetica">Histories</div>
+          </el-col>
+          <el-col :span="2">
+            <el-button type="danger" style="width: 100%;float: right" @click="clear_history">Clear</el-button>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-table
+              style="margin-top: 20px"
+              border
+              :data="histories"
+              :header-cell-style="{fontFamily:'微软雅黑',fontSize:'15px'}"
+              :cell-style="{color: '#666', fontFamily: 'Times New Roman',fontSize:'18px'}">
+              <el-table-column
+                align="center"
+                label="Method"
+                width="180">
+                <template slot-scope="scope">
+                  {{ scope.row.method.name }}
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="Aug smooth"
+                width="150">
+                <template slot-scope="scope">
+                  <el-switch :value="scope.row.aug_smooth"></el-switch>
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="Eigen smooth"
+                width="160">
+                <template slot-scope="scope">
+                  <el-switch :value="scope.row.eigen_smooth"></el-switch>
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="Origin image">
+                <template slot-scope="scope">
+                  <el-image :src="scope.row.image_url" class="table-image" fit="fill" />
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="Cam image">
+                <template slot-scope="scope">
+                  <el-image :src="scope.row.cam_image_url" class="table-image" fit="fill" />
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="GB image">
+                <template slot-scope="scope">
+                  <el-image :src="scope.row.gb_image_url" class="table-image" fit="fill" />
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="Operation"
+                width="140">
+                <template slot-scope="scope">
+                  <el-button icon="el-icon-zoom-in" type="primary" @click="showHistory(scope.row)"></el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-col>
+        </el-row>
+      </el-card>
+    </div>
+    <el-drawer
+      title="Options"
+      size="20%"
+      :visible.sync="visual_drawer"
+      direction="ltr">
+      <div style="width: 90%; margin: 0 auto">
+        <div style="font-size: 20px;font-family: Helvetica;margin-top: 20px">Select model</div>
+        <el-select
+          v-model="method"
+          style="width: 100%; margin-top: 15px"
+          stripe
+          value-key="name">
+          <el-option
+            v-for="item in methods"
+            :key="item.name"
+            :label="item.name"
+            :value="item">
+          </el-option>
+        </el-select>
+        <div style="font-size: 20px;font-family: Helvetica;margin-top: 40px">Select options</div>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-checkbox v-model="aug_smooth" :label="true" border class="radio-class">aug smooth</el-checkbox>
+          </el-col>
+          <el-col :span="12">
+            <el-checkbox v-model="eigen_smooth" :label="true" border class="radio-class">eigen smooth</el-checkbox>
+          </el-col>
+        </el-row>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script>
 import post from '../../utils/requests';
+import Loading from '../templetes/Loading';
 
 export default {
   name: 'CVClassify',
+  components: {
+    Loading
+  },
   data () {
     return {
       // params
@@ -170,13 +187,18 @@ export default {
       methods: [],
       cam_image_url: '',
       gb_image_url: '',
-      histories: []
+      histories: [],
+      loadingAttack: false,
+      visual_drawer: false
     };
   },
   created () {
     this.getMethods();
   },
   methods: {
+    handleOptions () {
+      this.visual_drawer = true;
+    },
     getMethods () {
       post('/interpret/methods', null).then(res => {
         this.methods = res.data;
@@ -193,7 +215,8 @@ export default {
       this.imageName = res;
     },
     uploadSuccess (res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
+      const baseImageUrl = 'http://127.0.0.1:9090/static/tmp/';
+      this.imageUrl = baseImageUrl + this.imageName;
     },
     clear_history () {
       this.histories = [];
@@ -220,8 +243,10 @@ export default {
     },
     async runExplain () {
       if (!this.validateParams()) {
+        this.visual_drawer = true;
         return;
       }
+      this.loadingAttack = true;
       const data = {
         aug_smooth: this.aug_smooth,
         eigen_smooth: this.eigen_smooth,
@@ -236,6 +261,7 @@ export default {
       const baseUrl = 'http://127.0.0.1:9090/static/grad_cam/';
       this.cam_image_url = baseUrl + res.data.cam_fn;
       this.gb_image_url = baseUrl + res.data.gb_fn;
+      this.loadingAttack = false;
       // store the explain to histories
       const history = {
         method: this.method,

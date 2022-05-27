@@ -32,21 +32,7 @@
         <el-col :span="12">
           <span class="s-cf-intro" style="font-family: Helvetica">Predicted identity</span>
           <el-divider></el-divider>
-          <el-table
-            :header-cell-style="{background:'#358ccd', fontFamily:'Helvetica',height:'60px',fontSize:'18px',color:'white'}"
-            :cell-style="{color: '#666', fontFamily: 'Arial',fontSize:'18px',height:'60px'}"
-            :data="classifyResult"
-            style="width: 100%;margin-top: 30px">
-            <el-table-column
-              prop="label"
-              label="Prediction"
-              width="300">
-            </el-table-column>
-            <el-table-column
-              prop="percentage"
-              label="Probability">
-            </el-table-column>
-          </el-table>
+          <LabelPerTable :table-data="classifyResult"></LabelPerTable>
         </el-col>
       </el-row>
       <el-row :gutter="80" class="el-row-cf">
@@ -88,9 +74,12 @@
 
 <script>
 import post from '../../utils/requests';
-
+import LabelPerTable from '../templetes/LabelPerTable';
 export default {
   name: 'CVClassify',
+  components: {
+    LabelPerTable
+  },
   data () {
     return {
       imageUrl: '',
@@ -123,7 +112,8 @@ export default {
       this.imageName = res;
     },
     uploadSuccess (res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
+      const baseImageUrl = 'http://127.0.0.1:9090/static/tmp/';
+      this.imageUrl = baseImageUrl + this.imageName;
     },
     async classifyImage () {
       if (!this.imageName) {
@@ -139,7 +129,7 @@ export default {
         url: '/cv/classify',
         data: this.$qs.stringify(data)
       });
-      this.classifyResult = res.data;
+      this.classifyResult = this.pre_show_data(res.data);
     },
     beforeUpload (file) {
       const isJPG = file.type === 'image/jpeg';
@@ -152,6 +142,15 @@ export default {
         this.$message.error('上传头像图片大小不能超过 2MB!');
       }
       return isJPG && isLt2M;
+    },
+    pre_show_data (result) {
+      for (let i = 0; i < result.length; ++i) {
+        result[i].percentage = this.render_float(result[i].percentage);
+      }
+      return result;
+    },
+    render_float (num) {
+      return (num.toFixed(4)) + '%';
     }
   }
 };

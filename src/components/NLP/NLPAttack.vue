@@ -1,192 +1,205 @@
 <template>
-  <div style="width: 70%; margin: 0 auto">
-    <el-card
-      shadow="hover"
-      style="margin-top: 60px">
-      <h1>
-        Visualize attack.
-      </h1>
-    </el-card>
-    <!--  select card  -->
-    <el-card
-      shadow="hover"
-      style="margin-top: 20px">
-      <el-row :gutter="20" style="margin-bottom: 0px">
-        <el-col :span="12"><span style="font-size: 25px;font-family: Helvetica">Select model</span></el-col>
-        <el-col :span="12"><span style="font-size: 25px;font-family: Helvetica">Select attack</span></el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="12">
-          <el-select
-            v-model="classifier"
-            style="width: 100%; margin-top: 10px"
-            stripe
-            value-key="name"
-            placeholder="please select">
-            <el-option
-              v-for="item in classifiers"
-              :key="item.name"
-              :label="item.name"
-              :value="item">
-            </el-option>
-          </el-select>
-        </el-col>
-        <el-col :span="12">
-          <el-select
-            v-model="attacker"
-            style="width: 100%; margin-top: 10px"
-            stripe
-            value-key="name"
-            placeholder="please select">
-            <el-option
-              v-for="item in attacks"
-              :key="item.name"
-              :label="item.name"
-              :value="item">
-            </el-option>
-          </el-select>
-        </el-col>
-      </el-row>
-    </el-card>
-    <!--  sentences card  -->
-    <el-card
-      shadow="hover"
-      style="margin-top: 20px">
-      <el-row :gutter="20" style="margin-bottom: 0px;display: flex;align-items: center">
-        <el-col :span="9">
-          <div style="font-size: 25px;font-family: Helvetica">Origin sentences</div>
-        </el-col>
-        <el-col :span="2">
-          <el-select v-model="total" placeholder="items total" style="width:100px;">
-            <el-option
-              v-for="item in totalOptions"
-              :key="item.value"
-              :label="item.value"
-              :value="item.value">
-              <span style="float: left">{{ item.value }}</span>
-            </el-option>
-          </el-select>
-        </el-col>
-        <el-col :span="1">
-          <el-button circle @click="getSamples" type="primary" class="el-icon-refresh-right" style="float: right"></el-button>
-        </el-col>
-        <el-col :span="10">
-          <div style="font-size: 25px;font-family: Helvetica">Result sentences</div>
-        </el-col>
-        <el-col :span="2">
-          <el-button style="margin-top: 10px;float: right" type="primary" @click="runAttack">Attack</el-button>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" style="margin-top: 15px">
-        <el-col :span="12">
-          <el-table
-            border
-            :header-cell-style="{fontFamily:'微软雅黑',height:'60px',fontSize:'18px'}"
-            :cell-style="{color: '#666', fontFamily: 'Times New Roman',fontSize:'18px',height:'60px'}"
-            :data="origin_samples"
-            :row-class-name="origin_table_row"
-            height="500">
-            <el-table-column
-              prop="x"
-              label="sentence"
-              width="530">
-            </el-table-column>
-            <el-table-column
-              prop="label"
-              label="label">
-            </el-table-column>
-          </el-table>
-        </el-col>
-        <el-col :span="12">
-          <el-table
-            border
-            :data="result_samples"
-            :header-cell-style="{fontFamily:'微软雅黑',height:'60px',fontSize:'18px'}"
-            :cell-style="{color: '#666', fontFamily: 'Times New Roman',fontSize:'18px',height:'60px'}"
-            height="500">
-            <el-table-column
-              prop="result"
-              label="sentence"
-              width="530">
-            </el-table-column>
-            <el-table-column
-              prop="y"
-              label="label">
-            </el-table-column>
-          </el-table>
-        </el-col>
-      </el-row>
-    </el-card>
-    <!--     -->
-    <el-card
-      shadow="hover"
-      style="margin-top: 20px"
-      v-show="attack_history.length !== 0">
-      <el-row :gutter="20">
-        <el-col :span="22">
-          <div style="font-size: 25px;font-family: Helvetica">Attack Metrics</div>
-        </el-col>
-        <el-col :span="2">
-          <el-button type="danger" style="float: right" @click="clear_history">Clear</el-button>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="24">
-          <el-table
-            style="margin-top: 20px"
-            border
-            :data="attack_history"
-            :header-cell-style="{fontFamily:'微软雅黑',fontSize:'15px'}"
-            :cell-style="{color: '#666', fontFamily: 'Times New Roman',fontSize:'18px',height:'60px'}">
-            <el-table-column
-              prop="attacker"
-              label="Attacker"
-              width="120">
-            </el-table-column>
-            <el-table-column
-              prop="classifier"
-              label="Classifier"
-              width="120">
-            </el-table-column>
-            <el-table-column
-              prop="total"
-              label="Total Instances"
-              width="150">
-            </el-table-column>
-            <el-table-column
-              prop="total_success"
-              label="Successful Instances"
-              width="180">
-            </el-table-column>
-            <el-table-column
-              prop="accuracy"
-              label="Classifier Accuracy"
-              width="180">
-            </el-table-column>
-            <el-table-column
-              prop="attack_success_rate"
-              label="Attack Success Rate"
-              width="180">
-            </el-table-column>
-            <el-table-column
-              prop="avg_victim_model_queries"
-              label="Avg. Victim Model Queries">
-            </el-table-column>
-            <el-table-column
-              prop="date"
-              label="Time">
-            </el-table-column>
-          </el-table>
-        </el-col>
-      </el-row>
-    </el-card>
+  <div>
+    <div style="text-align: right">
+      <div v-if="loadingAttack">
+        <Loading></Loading>
+      </div>
+      <img src="../../assets/images/menu.png" style="height: 30px;position:absolute;top:8.8%;left:97%" @click="handleOptions" />
+    </div>
+    <div style="width: 70%; margin: 0 auto">
+      <el-card
+        shadow="hover"
+        style="margin-top: 40px">
+        <el-row :gutter="20" style="display: flex;align-items: center">
+          <el-col :span="22">
+            <div style="font-size: 40px;font-family: Helvetica">
+              Visualize attack.
+            </div>
+          </el-col>
+          <el-col :span="2">
+            <el-button type="danger" style="float: right" @click="runAttack">Attack</el-button>
+          </el-col>
+        </el-row>
+        <h1>
+        </h1>
+      </el-card>
+      <!--  sentences card  -->
+      <el-card
+        shadow="hover"
+        style="margin-top: 20px">
+        <el-row :gutter="20" style="margin-bottom: 0px;display: flex;align-items: center">
+          <el-col :span="9">
+            <div style="font-size: 25px;font-family: Helvetica">Origin sentences</div>
+          </el-col>
+          <el-col :span="2">
+            <el-select v-model="total" placeholder="items total" style="width:100px;">
+              <el-option
+                v-for="item in totalOptions"
+                :key="item.value"
+                :label="item.value"
+                :value="item.value">
+                <span style="float: left">{{ item.value }}</span>
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="1">
+            <el-button circle @click="getSamples" type="primary" class="el-icon-refresh-right" style="float: right"></el-button>
+          </el-col>
+          <el-col :span="10">
+            <div style="font-size: 25px;font-family: Helvetica">Result sentences</div>
+          </el-col>
+          <el-col :span="2">
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="12">
+            <el-table
+              border
+              :header-cell-style="{fontFamily:'微软雅黑',height:'60px',fontSize:'18px'}"
+              :cell-style="{color: '#666', fontFamily: 'Times New Roman',fontSize:'18px',height:'60px'}"
+              :data="origin_samples"
+              :row-class-name="origin_table_row"
+              height="500">
+              <el-table-column
+                prop="x"
+                label="sentence"
+                width="530">
+              </el-table-column>
+              <el-table-column
+                prop="label"
+                label="label">
+              </el-table-column>
+            </el-table>
+          </el-col>
+          <el-col :span="12">
+            <el-table
+              border
+              :data="result_samples"
+              :header-cell-style="{fontFamily:'微软雅黑',height:'60px',fontSize:'18px'}"
+              :cell-style="{color: '#666', fontFamily: 'Times New Roman',fontSize:'18px',height:'60px'}"
+              height="500">
+              <el-table-column
+                prop="result"
+                label="sentence"
+                width="530">
+              </el-table-column>
+              <el-table-column
+                prop="y"
+                label="label">
+              </el-table-column>
+            </el-table>
+          </el-col>
+        </el-row>
+      </el-card>
+      <!--     -->
+      <el-card
+        shadow="hover"
+        style="margin-top: 20px"
+        v-show="attack_history.length !== 0">
+        <el-row :gutter="20">
+          <el-col :span="22">
+            <div style="font-size: 25px;font-family: Helvetica">Attack Metrics</div>
+          </el-col>
+          <el-col :span="2">
+            <el-button type="danger" style="float: right" @click="clear_history">Clear</el-button>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-table
+              style="margin-top: 20px"
+              border
+              :data="attack_history"
+              :header-cell-style="{fontFamily:'微软雅黑',fontSize:'15px'}"
+              :cell-style="{color: '#666', fontFamily: 'Times New Roman',fontSize:'18px',height:'60px'}">
+              <el-table-column
+                prop="attacker"
+                label="Attacker"
+                width="120">
+              </el-table-column>
+              <el-table-column
+                prop="classifier"
+                label="Classifier"
+                width="120">
+              </el-table-column>
+              <el-table-column
+                prop="total"
+                label="Total Instances"
+                width="150">
+              </el-table-column>
+              <el-table-column
+                prop="total_success"
+                label="Successful Instances"
+                width="180">
+              </el-table-column>
+              <el-table-column
+                prop="accuracy"
+                label="Classifier Accuracy"
+                width="180">
+              </el-table-column>
+              <el-table-column
+                prop="attack_success_rate"
+                label="Attack Success Rate"
+                width="180">
+              </el-table-column>
+              <el-table-column
+                prop="avg_victim_model_queries"
+                label="Avg. Victim Model Queries">
+              </el-table-column>
+              <el-table-column
+                prop="date"
+                label="Time">
+              </el-table-column>
+            </el-table>
+          </el-col>
+        </el-row>
+      </el-card>
+    </div>
+    <el-drawer
+      title="Options"
+      size="20%"
+      :visible.sync="visual_drawer"
+      direction="ltr">
+      <div style="width: 90%; margin: 0 auto">
+        <div style="font-size: 20px;font-family: Helvetica;margin-top: 20px">Select model</div>
+        <el-select
+          v-model="classifier"
+          style="width: 100%; margin-top: 15px"
+          stripe
+          value-key="name">
+          <el-option
+            v-for="item in classifiers"
+            :key="item.name"
+            :label="item.name"
+            :value="item">
+          </el-option>
+        </el-select>
+        <div style="font-size: 20px;font-family: Helvetica;margin-top: 40px">Select attack</div>
+        <el-select
+          v-model="attacker"
+          style="width: 100%; margin-top: 15px"
+          stripe
+          value-key="name">
+          <el-option
+            v-for="item in attacks"
+            :key="item.name"
+            :label="item.name"
+            :value="item">
+          </el-option>
+        </el-select>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script>
 import post from '../../utils/requests';
+import Loading from '../templetes/Loading';
 
 export default {
+  components: {
+    Loading
+  },
   name: 'CVClassify',
   data () {
     return {
@@ -206,7 +219,9 @@ export default {
       origin_samples: [],
       result_samples: [],
       // show data
-      attack_history: []
+      attack_history: [],
+      visual_drawer: false,
+      loadingAttack: false
     };
   },
   created () {
@@ -215,6 +230,9 @@ export default {
     this.getSamples();
   },
   methods: {
+    handleOptions () {
+      this.visual_drawer = true;
+    },
     clear_history () {
       this.attack_history = [];
     },
@@ -246,6 +264,7 @@ export default {
         start: -1,
         total: this.total
       };
+      this.loadingAttack = true;
       post('/nlp/data_samples', data).then(res => {
         // set the label into fractionDigits: 4
         const sentences = res.data;
@@ -256,11 +275,14 @@ export default {
         this.start = res.start;
         this.$message.success('Get samples successful!');
       });
+      this.loadingAttack = false;
     },
     async runAttack () {
       if (!this.validateParams()) {
+        this.visual_drawer = true;
         return;
       }
+      this.loadingAttack = true;
       const data = {
         start: this.start,
         total: this.total,
@@ -279,6 +301,7 @@ export default {
       }
       this.origin_samples = sentences;
       this.result_samples = res.data.result_samples;
+      this.loadingAttack = false;
       // set the show data
       const metrics = {
         attacker: this.attacker.name,

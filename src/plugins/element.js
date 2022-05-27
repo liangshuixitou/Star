@@ -34,7 +34,11 @@ import {
   Divider,
   Image,
   Radio,
-  Checkbox
+  Checkbox,
+  Drawer,
+  Slider,
+  Carousel,
+  CarouselItem
 } from 'element-ui';
 
 Vue.use(Button);
@@ -71,5 +75,9 @@ Vue.use(Divider);
 Vue.use(Image);
 Vue.use(Radio);
 Vue.use(Checkbox);
+Vue.use(Drawer);
+Vue.use(Slider);
+Vue.use(Carousel);
+Vue.use(CarouselItem);
 Vue.prototype.$message = Message;
 Vue.prototype.$msgbox = MessageBox;

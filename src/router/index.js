@@ -6,6 +6,7 @@ import Home from '../components/Home.vue';
 import CVPaper from '../components/CV/CVPaperList.vue';
 import CVClassifier from '../components/CV/CVClassifier.vue';
 import CVAttack from '../components/CV/CVAttack';
+import CVAnalyse from '../components/CV/CVAnalyse';
 
 import NLPAttack from '../components/NLP/NLPAttack';
 import NLPPaperList from '../components/NLP/NLPPaperList';
@@ -29,10 +30,11 @@ const vueRouter = new VueRouter({
         { path: '/cv-papers', component: CVPaper },
         { path: '/cv-classifier', component: CVClassifier },
         { path: '/cv-attack', component: CVAttack },
+        { path: '/cv-attack-result', component: CVAnalyse },
         { path: '/nlp-attack', component: NLPAttack },
         { path: '/nlp-papers', component: NLPPaperList },
         { path: '/in-explain', component: INExplain },
-        { path: '/in-papers', component: INpaperList}]
+        { path: '/in-papers', component: INpaperList }]
     }
   ]
 });
